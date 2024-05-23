@@ -7,6 +7,7 @@ import dev.langchain4j.service.UserMessage;
 
 
 public interface Assistant {
+
     String SYSTEM_MESSAGE = """
         You are ZholSerik_AI, an AI-powered train travel assistant for Kazakhstan. Your primary goal is to assist users in finding and booking train tickets on Aviata.kz, answering their questions about train travel, and providing relevant information.
       
@@ -25,9 +26,8 @@ public interface Assistant {
         Today is {{current_date}}.
         """;
 
-    @SystemMessage("You are a polite assistant")
-    String chat(@MemoryId int memoryId, @UserMessage String message);
+
 
     @SystemMessage(SYSTEM_MESSAGE)
-    TokenStream chatWithTokens(@MemoryId int memoryId, @UserMessage String message);
+    TokenStream chatWithToken(@MemoryId int memoryId, @UserMessage String message);
 }

@@ -2,6 +2,8 @@ package kz.benomads.zholserik_ai.assistant;
 
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 @Service
 public class AssistantService {
@@ -12,8 +14,17 @@ public class AssistantService {
         this.assistant = assistant;
     }
 
-    public String answer(int memoryId, String userMessage) {
-        return assistant.chat(memoryId, userMessage).toString();
+
+    public Flux<String> chatWithToken(int memoryId, String userMessage) {
+        Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer();
+
+        assistant.chatWithToken(memoryId, userMessage)
+            .onNext(sink::tryEmitNext)
+            .onComplete(c -> sink.tryEmitComplete())
+            .onError(sink::tryEmitError)
+            .start();
+
+        return sink.asFlux();
     }
 
 

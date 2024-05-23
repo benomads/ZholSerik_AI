@@ -1,6 +1,7 @@
 package kz.benomads.zholserik_ai.assistant;
 
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 @RestController
 @RequestMapping("/api/v1/assistant")
@@ -12,10 +13,14 @@ public class AssistantController {
         this.assistantService = assistantService;
     }
 
-    @GetMapping("/chat2")
-    public String chat2(@RequestParam("userMessage") String userMessage,
-                       @RequestParam("id") int id) {
-        return assistantService.answer(id, userMessage);
+    @GetMapping("/chat-with-token")
+    public Flux<String> chatWithToken(@RequestParam("userMessage") String userMessage,
+                                      @RequestParam("memoryId") int id) {
+        if (userMessage == null || userMessage.isEmpty()) {
+            return Flux.error(new IllegalArgumentException("User message cannot be empty"));
+        }
+
+        return assistantService.chatWithToken(id, userMessage);
     }
 
 
